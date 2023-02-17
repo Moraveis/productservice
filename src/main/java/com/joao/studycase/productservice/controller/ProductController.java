@@ -1,5 +1,7 @@
 package com.joao.studycase.productservice.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/products")
 public class ProductController {
 
+    @Autowired
+    private Environment env;
+
     @GetMapping
     public String getProduct() {
-        return "HTTP GET Request handled";
+        return "HTTP GET Request handled" + env.getProperty("local.server.port");
     }
 
     @PostMapping
