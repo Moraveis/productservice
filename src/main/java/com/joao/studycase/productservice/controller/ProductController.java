@@ -1,7 +1,7 @@
 package com.joao.studycase.productservice.controller;
 
 import com.joao.studycase.productservice.command.CreateProductCommand;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +17,13 @@ import java.util.UUID;
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
+    private final CommandGateway commandGateway;
+
+    public ProductController(Environment env, CommandGateway commandGateway) {
+        this.env = env;
+        this.commandGateway = commandGateway;
+    }
 
     @GetMapping
     public String getProduct() {
@@ -35,7 +40,15 @@ public class ProductController {
                 .productId(UUID.randomUUID().toString())
                 .build();
 
-        return "HTTP POST Request handled. Product = " + request.getTitle();
+        String commandResult;
+
+        try {
+            commandResult = commandGateway.sendAndWait(createProductCommand);
+        } catch (Exception e) {
+            commandResult = e.getLocalizedMessage();
+        }
+
+        return commandResult;
     }
 
     @PutMapping
