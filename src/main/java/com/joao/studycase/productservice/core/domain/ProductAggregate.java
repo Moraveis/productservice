@@ -11,6 +11,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Aggregate
 public class ProductAggregate {
@@ -30,7 +31,7 @@ public class ProductAggregate {
             throw new IllegalArgumentException("Price cannot be less or equal than zero.");
         }
 
-        if (Strings.isBlank(createProductCommand.getTitle())) {
+        if (Objects.isNull(createProductCommand.getTitle()) || Strings.isBlank(createProductCommand.getTitle())) {
             throw new IllegalArgumentException("Product title cannot be empty.");
         }
 
