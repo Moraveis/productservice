@@ -25,11 +25,6 @@ public class ProductCommandController {
         this.commandGateway = commandGateway;
     }
 
-    @GetMapping
-    public String getProduct() {
-        return "HTTP GET Request handled" + env.getProperty("local.server.port");
-    }
-
     @PostMapping
     public String createProduct(@RequestBody ProductRequest request) {
 
