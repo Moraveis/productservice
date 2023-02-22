@@ -1,4 +1,4 @@
-package com.joao.studycase.productservice.domain;
+package com.joao.studycase.productservice.core.domain;
 
 import com.joao.studycase.productservice.command.CreateProductCommand;
 import com.joao.studycase.productservice.core.events.ProductCreatedEvent;
