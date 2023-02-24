@@ -1,7 +1,9 @@
 package com.joao.studycase.productservice;
 
 import com.joao.studycase.productservice.command.interceptors.CreateProductCommandInterceptor;
+import com.joao.studycase.productservice.handler.ProductServiceEventErrorHandler;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.config.EventProcessingConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +21,11 @@ public class ProductServiceApplication {
     @Autowired
     public void registerCreateProductCommandInterceptor(ApplicationContext context, CommandBus commandBus) {
         commandBus.registerDispatchInterceptor(context.getBean(CreateProductCommandInterceptor.class));
+    }
+
+    @Autowired
+    public void configure(EventProcessingConfigurer configurer) {
+        configurer.registerListenerInvocationErrorHandler("product-group", configuration -> new ProductServiceEventErrorHandler());
     }
 
 }

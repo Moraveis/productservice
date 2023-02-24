@@ -1,5 +1,6 @@
 package com.joao.studycase.productservice.core.exception;
 
+import org.axonframework.commandhandling.CommandExecutionException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class ProductServiceErrorHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> handleException(Exception exception, WebRequest request) {
+        ErrorMessage errorMessage = buildErrorMessage(exception);
+        return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CommandExecutionException.class)
+    public ResponseEntity<ErrorMessage> handleCommandExecutionException(Exception exception, WebRequest request) {
         ErrorMessage errorMessage = buildErrorMessage(exception);
         return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
