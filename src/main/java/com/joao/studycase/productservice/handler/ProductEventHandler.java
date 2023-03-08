@@ -1,5 +1,6 @@
 package com.joao.studycase.productservice.handler;
 
+import com.joao.studycase.productservice.commons.ProductReservedEvent;
 import com.joao.studycase.productservice.core.entity.ProductEntity;
 import com.joao.studycase.productservice.core.events.ProductCreatedEvent;
 import com.joao.studycase.productservice.core.repository.ProductRepository;
@@ -38,5 +39,12 @@ public class ProductEventHandler {
         } catch (IllegalArgumentException ex) {
             ex.getStackTrace();
         }
+    }
+
+    @EventHandler
+    public void on(ProductReservedEvent productReservedEvent) {
+        ProductEntity productEntity = productRepository.findByProductId(productReservedEvent.getProductId());
+        productEntity.setQuantity(productEntity.getQuantity() - productReservedEvent.getQuantity());
+        productRepository.save(productEntity);
     }
 }
