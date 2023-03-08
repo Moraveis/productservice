@@ -1,6 +1,8 @@
 package com.joao.studycase.productservice.core.domain;
 
 import com.joao.studycase.productservice.command.CreateProductCommand;
+import com.joao.studycase.productservice.commons.ProductReservedEvent;
+import com.joao.studycase.productservice.commons.ReserveProductCommand;
 import com.joao.studycase.productservice.core.events.ProductCreatedEvent;
 import org.apache.logging.log4j.util.Strings;
 import org.axonframework.commandhandling.CommandHandler;
@@ -41,12 +43,33 @@ public class ProductAggregate {
         AggregateLifecycle.apply(productCreatedEvent); //dispatch event to all available handlers in the aggregate
     }
 
+    @CommandHandler
+    public void handle(ReserveProductCommand reserveProductCommand) {
+        if (this.quantity < reserveProductCommand.getQuantity()) {
+            throw new IllegalArgumentException("Insufficient number of items in stock");
+        }
+
+        ProductReservedEvent productReservedEvent = ProductReservedEvent.builder()
+                .orderId(reserveProductCommand.getOrderId())
+                .productId(reserveProductCommand.getProductId())
+                .userId(reserveProductCommand.getUserId())
+                .quantity(reserveProductCommand.getQuantity())
+                .build();
+
+        AggregateLifecycle.apply(productReservedEvent);
+    }
+
     @EventSourcingHandler
     public void on(ProductCreatedEvent productCreatedEvent) {
         this.productId = productCreatedEvent.getProductId();
         this.price = productCreatedEvent.getPrice();
         this.quantity = productCreatedEvent.getQuantity();
         this.title = productCreatedEvent.getTitle();
+    }
+
+    @EventSourcingHandler
+    public void on(ProductReservedEvent productReservedEvent) {
+        this.quantity -= productReservedEvent.getQuantity();
     }
 
 }
